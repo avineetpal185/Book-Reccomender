@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book-Recommendation-System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<style>
+
+    /* ================= TEXT ================= */
+    .text-white {
+        color: white;
+    }
+    
+    /* ================= CARD ================= */
+    .card {
+        background-color: #111;
+        border-radius: 15px;
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* 🔥 Strong hover */
+    .card:hover {
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 
+            0px 15px 30px rgba(0,255,150,0.4),
+            0px 0px 15px rgba(0,255,150,0.6);
+        border: 1px solid rgba(0,255,150,0.8);
+    }
+    
+    /* 🔥 image zoom */
+    .card-img-top {
+        transition: 0.4s;
+        border-radius: 10px;
+    }
+    
+    .card:hover .card-img-top {
+        transform: scale(1.08);
+    }
+    
+    /* 🔥 text glow */
+    .card:hover p {
+        color: #00ffcc !important;
+        text-shadow: 0px 0px 5px #00ffcc;
+    }
+    
+    /* ================= NAVBAR ================= */
+    
+    /* hover animation */
+    .nav-hover {
+        position: relative;
+        transition: 0.3s ease;
+    }
+    
+    .nav-hover:hover {
+        transform: translateY(-4px);
+        color: #00ffcc !important;
+    }
+    
+    /* underline animation */
+    .nav-hover::after {
+        content: "";
+        position: absolute;
+        width: 0%;
+        height: 2px;
+        background: yellow;
+        left: 0;
+        bottom: 0;
+        transition: 0.3s;
+    }
+    
+    .nav-hover:hover::after {
+        width: 100%;
+    }
+    
+    /* active link */
+    .active-link {
+        color: yellow !important;
+        font-weight: bold;
+        transform: translateY(-5px);
+        text-shadow: 0px 0px 10px yellow;
+    }
+    
+    /* active underline */
+    .active-link::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background: yellow;
+        left: 0;
+        bottom: 0;
+    }
+    
+    /* ================= TITLE ================= */
+    
+    .title-glow {
+        font-size: 50px;
+        font-weight: bold;
+        color: white;
+        letter-spacing: 2px;
+        position: relative;
+        animation: fadeSlide 1s ease forwards;
+    }
+    
+    /* glow effect */
+    .title-glow:hover {
+        text-shadow: 
+            0 0 10px #00ffcc,
+            0 0 20px #00ffcc,
+            0 0 30px #00ffcc;
+    }
+    
+    /* underline animation */
+    .title-glow::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -10px;
+        width: 0%;
+        height: 3px;
+        background: linear-gradient(90deg,#00a65a,#007bff);
+        transform: translateX(-50%);
+        transition: 0.4s;
+    }
+    
+    .title-glow:hover::after {
+        width: 60%;
+    }
+    
+    /* entry animation */
+    @keyframes fadeSlide {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .brand-text {
+    font-size: 22px;        /* not too big */
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+/* highlight part */
+.brand-highlight {
+    color: yellow;
+}
+
+/* hover effect */
+.brand-text:hover {
+    transform: scale(1.05);
+    text-shadow: 0px 0px 10px white;
+}
+.title-glow,
+.helper-box p,
+h1 {
+    user-select: none;
+    cursor: default;   /* normal arrow */
+}
+
+/* optional: also for brand */
+.brand-text {
+    user-select: none;
+    cursor: pointer;
+}
+
+.card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+    </style>
+
+<body style="background-color: black">
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow" style="background: linear-gradient(90deg,#00a65a,#007bff);">
+        <div class="container-fluid">
+    
+            <!-- Brand -->
+            <span class="navbar-brand brand-text">
+                📚 Book<span class="brand-highlight">Recommender</span>
+            </span>
+            <!-- Menu -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link nav-hover active-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-hover" href="/recommend">Recommender</a>
+                </li>
+               
+            </ul>
+    
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="title-glow text-center mt-3">
+                    📚 Top 50 Books
+                </h1>
+            </div>
+
+            {% for i in range(book_name|length) %}
+           <div class="col-3" style="margin-top:30px">
+            <div class="card">
+                    <div class="card-body text-center">
+
+                        <!-- image size fixed -->
+                        <img class="card-img-top" src="{{ image[i] }}" 
+                             style="height:200px; width:150px; object-fit:cover; margin:auto;">
+
+                        <!-- book info -->
+                        <p class="text-white mt-2">{{ book_name[i] }}</p>
+                        <p class="text-white">{{ author[i] }}</p>
+                        <p class="text-white">Votes: {{ votes[i] }}</p>
+
+                        <!-- rounded rating -->
+                        <p class="text-warning">
+                            ⭐ {{ "%.1f"|format(rating[i]) }}
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</body>
+</html>
