@@ -5,7 +5,7 @@ import os
 import sys
 import numpy
 
-# 🔥 FIX: numpy pickle compatibility (VERY IMPORTANT)
+# 🔥 FIX: numpy pickle compatibility
 sys.modules['numpy._core'] = numpy.core
 
 app = Flask(__name__)
@@ -13,26 +13,34 @@ app = Flask(__name__)
 # ✅ Base directory
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
+# 🔥 GLOBAL CACHE (VERY IMPORTANT)
+popular_df = None
+pt = None
+books = None
+similarity_scores = None
 
-# ✅ Lazy loading (fix memory crash on Render)
-def load_popular():
-    return pickle.load(open(os.path.join(base_dir, 'popular.pkl'), 'rb'))
+# 🔥 LOAD DATA ONLY ONCE
+def load_data():
+    global popular_df, pt, books, similarity_scores
 
-def load_pt():
-    return pickle.load(open(os.path.join(base_dir, 'pt.pkl'), 'rb'))
+    if popular_df is None:
+        popular_df = pickle.load(open(os.path.join(base_dir, 'popular.pkl'), 'rb'))
 
-def load_books():
-    return pickle.load(open(os.path.join(base_dir, 'books.pkl'), 'rb'))
+    if pt is None:
+        pt = pickle.load(open(os.path.join(base_dir, 'pt.pkl'), 'rb'))
 
-def load_similarity():
-    return pickle.load(open(os.path.join(base_dir, 'similarity_scores.pkl'), 'rb'))
+    if books is None:
+        books = pickle.load(open(os.path.join(base_dir, 'books.pkl'), 'rb'))
+
+    if similarity_scores is None:
+        similarity_scores = pickle.load(open(os.path.join(base_dir, 'similarity_scores.pkl'), 'rb'))
 
 
 # ✅ Home Page
 @app.route('/')
 def index():
     try:
-        popular_df = load_popular()
+        load_data()
 
         return render_template(
             'index.html',
@@ -56,17 +64,14 @@ def recommend_ui():
 @app.route('/recommend_books', methods=['POST'])
 def recommend():
     try:
+        load_data()
+
         user_input = request.form.get('user_input')
 
         if not user_input:
             return render_template('recommend.html', data=[])
 
         user_input = user_input.strip().lower()
-
-        # load only when needed
-        pt = load_pt()
-        books = load_books()
-        similarity_scores = load_similarity()
 
         pt_index = pt.index.str.lower()
 
