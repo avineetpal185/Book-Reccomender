@@ -2,18 +2,25 @@ from flask import Flask, render_template, request
 import pickle
 import numpy as np
 import os
+import sys
+import numpy
+
+# 🔥 FIX: numpy pickle compatibility (VERY IMPORTANT)
+sys.modules['numpy._core'] = numpy.core
 
 app = Flask(__name__)
 
-# ✅ Base directory (IMPORTANT for deployment)
+# ✅ Base directory (important for deployment)
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# ✅ Load data using correct path
+# ✅ Load data safely
 popular_df = pickle.load(open(os.path.join(base_dir, 'popular.pkl'), 'rb'))
 pt = pickle.load(open(os.path.join(base_dir, 'pt.pkl'), 'rb'))
 books = pickle.load(open(os.path.join(base_dir, 'books.pkl'), 'rb'))
 similarity_scores = pickle.load(open(os.path.join(base_dir, 'similarity_scores.pkl'), 'rb'))
 
+
+# ✅ Home Page
 @app.route('/')
 def index():
     return render_template(
@@ -25,10 +32,14 @@ def index():
         rating=list(popular_df['avg_rating'].values)
     )
 
+
+# ✅ Recommendation UI Page
 @app.route('/recommend')
 def recommend_ui():
     return render_template('recommend.html')
 
+
+# ✅ Recommendation Logic
 @app.route('/recommend_books', methods=['POST'])
 def recommend():
     user_input = request.form.get('user_input')
@@ -38,10 +49,13 @@ def recommend():
 
     user_input = user_input.strip()
 
-    if user_input not in pt.index:
+    # Case-insensitive matching (better UX)
+    pt_index = pt.index.str.lower()
+
+    if user_input.lower() not in pt_index:
         return render_template('recommend.html', data=[])
 
-    index = np.where(pt.index == user_input)[0][0]
+    index = np.where(pt_index == user_input.lower())[0][0]
 
     similar_items = sorted(
         list(enumerate(similarity_scores[index])),
@@ -64,7 +78,7 @@ def recommend():
     return render_template('recommend.html', data=data)
 
 
-# ✅ IMPORTANT FOR DEPLOYMENT
+# ✅ Deployment config (VERY IMPORTANT)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
