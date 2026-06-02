@@ -6,6 +6,8 @@ A Machine Learning-based book recommendation system built using Streamlit that p
 🚀 Live Website-> https://avineetpal185-book-reccomender-streamlit-app-ccqgw3.streamlit.app/
 
    Click here to download the Android app: https://github.com/avineetpal185/Book-Reccomender/releases
+
+   ->Go in above link and then click on the app-debug.app(Automatically Installation start !)
    
 
 
