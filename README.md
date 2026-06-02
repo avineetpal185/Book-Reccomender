@@ -3,7 +3,9 @@
 A Machine Learning-based book recommendation system built using Streamlit that provides personalized book suggestions by analyzing user ratings and computing similarity between books using collaborative filtering.
 
 
-🚀 Live App-> https://avineetpal185-book-reccomender-streamlit-app-ccqgw3.streamlit.app/
+🚀 Live Website-> https://avineetpal185-book-reccomender-streamlit-app-ccqgw3.streamlit.app/
+   Click here to download the Android app: https://github.com/avineetpal185/Book-Recommender/releases
+   
 
 
 ## ⚙️ Features
